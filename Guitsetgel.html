@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Construction Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <img src="viber_image_2024-12-13_09-29-32-250.png" alt="Company Logo" class="logo">
+            <h1>Барилгын Ажлын Дашбоард</h1>
+        </header>
+        
+        <!-- Өгөгдөл оруулах хүснэгт -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Ажлын төрөл</th>
+                    <th>Гүйцэтгэлийн хувь (%)</th>
+                    <th>Он сар өдөр</th>
+                </tr>
+            </thead>
+            <tbody id="data-table">
+                <tr>
+                    <td>Суурь</td>
+                    <td><input type="number" value="30" id="foundation"></td>
+                    <td><input type="date" id="foundation-date"></td>
+                </tr>
+                <tr>
+                    <td>Бетон цутгалт</td>
+                    <td><input type="number" value="50" id="concrete"></td>
+                    <td><input type="date" id="concrete-date"></td>
+                </tr>
+                <tr>
+                    <td>Арматурын ажил</td>
+                    <td><input type="number" value="20" id="rebar"></td>
+                    <td><input type="date" id="rebar-date"></td>
+                </tr>
+            </tbody>
+        </table>
+        <button onclick="updateCharts()">График шинэчлэх</button>
+
+        <!-- Графикууд -->
+        <div class="charts">
+            <canvas id="barChart" width="300" height="150"></canvas>
+            <canvas id="pieChart" width="300" height="150"></canvas>
+            <canvas id="mixedChart" width="300" height="150"></canvas>
+        </div>
+    </div>
+
+    <script>
+        let barChart, pieChart, mixedChart;
+
+        function updateCharts() {
+            const foundation = document.getElementById("foundation").value;
+            const concrete = document.getElementById("concrete").value;
+            const rebar = document.getElementById("rebar").value;
+            
+            const ctxBar = document.getElementById("barChart").getContext("2d");
+            if (barChart) barChart.destroy();
+            barChart = new Chart(ctxBar, {
+                type: "bar",
+                data: {
+                    labels: ["Суурь", "Бетон цутгалт", "Арматур"],
+                    datasets: [{
+                        label: "Гүйцэтгэл (%)",
+                        data: [foundation, concrete, rebar],
+                        backgroundColor: ["#1e3a8a", "#2563eb", "#3b82f6"]
+                    }]
+                }
+            });
+
+            const ctxPie = document.getElementById("pieChart").getContext("2d");
+            if (pieChart) pieChart.destroy();
+            pieChart = new Chart(ctxPie, {
+                type: "pie",
+                data: {
+                    labels: ["Суурь", "Бетон цутгалт", "Арматур"],
+                    datasets: [{
+                        data: [foundation, concrete, rebar],
+                        backgroundColor: ["#1e3a8a", "#2563eb", "#3b82f6"]
+                    }]
+                }
+            });
+            
+            const ctxMixed = document.getElementById("mixedChart").getContext("2d");
+            if (mixedChart) mixedChart.destroy();
+
+            let labels = ["Өнөөдөр"];
+            let data = [foundation];
+            for (let i = 1; i <= 12; i++) {
+                labels.push(i + " сар");
+                data.push(data[i - 1] * 1.15);
+            }
+
+            mixedChart = new Chart(ctxMixed, {
+                type: "line",
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: "Прогноз (1 жилийн турш)",
+                        data: data,
+                        borderColor: "#ffcc00",
+                        fill: false
+                    }]
+                }
+            });
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #0f172a;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+        }
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        .logo {
+            width: 120px;
+            height: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #2563eb;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #1e3a8a;
+        }
+        button {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        button:hover {
+            background-color: #3b82f6;
+        }
+        .charts {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        canvas {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+        }
+    </style>
+</body>
+</html>
